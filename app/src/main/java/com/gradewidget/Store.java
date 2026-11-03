@@ -30,6 +30,16 @@ final class Store {
         return prefs(c).getString("url", BuildConfig.DATA_URL);
     }
 
+    static final String DEFAULT_CLAUDE_URL = "https://claude.ai/project/01a19ecb-71ee-736c-875f-13c1bef81c46";
+
+    static String claudeUrl(Context c) {
+        return prefs(c).getString("claudeUrl", DEFAULT_CLAUDE_URL);
+    }
+
+    static void saveClaudeUrl(Context c, String u) {
+        prefs(c).edit().putString("claudeUrl", u.trim().isEmpty() ? DEFAULT_CLAUDE_URL : u.trim()).apply();
+    }
+
     static String passphrase(Context c) {
         return prefs(c).getString("pass", "");
     }

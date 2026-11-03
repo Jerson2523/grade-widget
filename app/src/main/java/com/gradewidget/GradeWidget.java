@@ -15,6 +15,14 @@ import org.json.JSONObject;
 public class GradeWidget extends AppWidgetProvider {
     static final String ACTION_REFRESH = "com.gradewidget.REFRESH";
 
+    /** Redraw every widget from the saved grades (after a look change), without downloading. */
+    static void redraw(Context context) {
+        Context app = context.getApplicationContext();
+        AppWidgetManager mgr = AppWidgetManager.getInstance(app);
+        int[] ids = mgr.getAppWidgetIds(new ComponentName(app, GradeWidget.class));
+        render(app, mgr, ids, Store.cached(app), null);
+    }
+
     @Override
     public void onUpdate(Context context, AppWidgetManager mgr, int[] ids) {
         refreshAsync(context, goAsync());
@@ -63,6 +71,7 @@ public class GradeWidget extends AppWidgetProvider {
 
     static void render(Context context, AppWidgetManager mgr, int[] ids, JSONObject data, String status) {
         float density = context.getResources().getDisplayMetrics().density;
+        Style style = Style.load(context);
         for (int id : ids) {
             Bundle o = mgr.getAppWidgetOptions(id);
             int wDp = o.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 250);
@@ -73,12 +82,17 @@ public class GradeWidget extends AppWidgetProvider {
             int h = Math.min(Math.round(hDp * density), 1000);
 
             RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget);
-            rv.setImageViewBitmap(R.id.canvas, Renderer.draw(data, status, w, h, density));
+            rv.setImageViewBitmap(R.id.canvas, Renderer.draw(data, status, w, h, density, style));
 
             Intent tap = new Intent(context, GradeWidget.class).setAction(ACTION_REFRESH);
             PendingIntent pi = PendingIntent.getBroadcast(context, 0, tap,
                     PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             rv.setOnClickPendingIntent(R.id.root, pi);
+
+            Intent ask = new Intent(context, AskClaudeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            PendingIntent askPi = PendingIntent.getActivity(context, 1, ask,
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            rv.setOnClickPendingIntent(R.id.update_btn, askPi);
             mgr.updateAppWidget(id, rv);
         }
     }

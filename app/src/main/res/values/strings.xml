@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">Grades</string>
     <string name="widget_desc">Your GPA and course grades</string>
+    <string name="ask_update">Ask Claude to update grades</string>
 </resources>

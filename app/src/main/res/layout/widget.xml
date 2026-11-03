@@ -7,6 +7,13 @@
         android:id="@+id/canvas"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitCenter"
+        android:scaleType="fitXY"
         android:contentDescription="@string/widget_desc" />
+    <TextView
+        android:id="@+id/update_btn"
+        android:layout_width="76dp"
+        android:layout_height="36dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="6dp"
+        android:contentDescription="@string/ask_update" />
 </FrameLayout>
